@@ -28,6 +28,7 @@ let of_graph Graph.{type_; data} =
     match type_ with
     | "scatter" -> "Scatter"
     | "scatter3d" -> "Scatter3d"
+    | "scattergl" -> "Scattergl"
     | "bar" -> "Bar"
     | "pie" -> "Pie"
     | _ -> assert false

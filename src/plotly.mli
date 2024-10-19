@@ -77,6 +77,7 @@ module Graph : sig
 
   val scatter : Data.t list -> t
   val scatter3d : Data.t list -> t
+  val scattergl : Data.t list -> t
   val bar : Data.t list -> t
   val pie : Data.t list -> t
   val histogram : Data.t list -> t
