@@ -51,6 +51,7 @@ module Graph = struct
 
   let scatter data_list = { type_ = "scatter"; data= List.flatten data_list }
   let scatter3d data_list = { type_ = "scatter3d"; data= List.flatten data_list }
+  let scattergl data_list = { type_ = "scattergl"; data= List.flatten data_list }
   let bar data_list = { type_ = "bar"; data= List.flatten data_list }
   let pie data_list = { type_ = "pie"; data= List.flatten data_list }
   let histogram data_list = { type_ = "histogram"; data= List.flatten data_list }

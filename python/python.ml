@@ -23,17 +23,35 @@ type _ t = Py.Object.t
 
 type figure
 
-let of_graph Graph.{type_; data} =
+let of_graph ?(z = [||]) ?text Graph.{type_; data} =
   let c =
     match type_ with
     | "scatter" -> "Scatter"
     | "scatter3d" -> "Scatter3d"
+    | "scattergl" -> "Scattergl"
     | "bar" -> "Bar"
     | "pie" -> "Pie"
     | _ -> assert false
   in
+  let base_attributes = of_attributes (data :> Attribute.t list) in
+  let marker_attributes = Some [
+    "colorscale", Py.String.of_string "Viridis";
+    "color", Py.List.of_array_map Py.Float.of_float z;
+    "size", Py.Int.of_int 1;
+  ]
+  in
+  let py_attributes =
+    List.concat [
+      base_attributes;
+      (Option.fold ~none:[] ~some:(fun l ->
+        [ "marker", Py.Dict.of_bindings_string l ]) marker_attributes);
+      (Option.fold ~none:[] ~some:(fun a ->
+        [ "text", Py.List.of_array_map Py.String.of_string a ]
+      ) text)
+    ]
+  in
   Py.Module.get_function_with_keywords go c [||]
-    (of_attributes (data :> Attribute.t list))
+    py_attributes
 
 let of_layout layout =
   let layout = (layout : Layout.t :> Attribute.t list) in
@@ -42,8 +60,8 @@ let of_layout layout =
     of_value
     layout
 
-let of_figure fig : figure t =
-  let data = Py.List.of_list_map of_graph fig.Figure.graphs in
+let of_figure ?z ?text fig : figure t =
+  let data = Py.List.of_list_map (of_graph ?z ?text) fig.Figure.graphs in
   let layout = of_layout fig.layout in
   Py.Module.get_function_with_keywords go "Figure" [||]
     ["data", data;
